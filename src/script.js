@@ -13,7 +13,7 @@ import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
  * Base
  */
 // Debug
-const gui = new GUI()
+// const gui = new GUI()
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -45,6 +45,8 @@ gltfLoader.load(
         
         scene.add(bar.scene)
         camera.lookAt(bar.scene.position);
+
+        bar.scene.receiveShadow = true
         
     },
     (progress) => {
@@ -62,19 +64,31 @@ gltfLoader.load(
 /**
  * Lights
  */
-const ambientLight = new THREE.AmbientLight(0xffffff, 2.4)
-scene.add(ambientLight)
+const directionalLightFront = new THREE.DirectionalLight(0xffffff, 1.8)
+directionalLightFront.castShadow = true
+directionalLightFront.shadow.mapSize.set(1024, 1024)
+directionalLightFront.shadow.camera.far = 15
+directionalLightFront.shadow.camera.left = - 7
+directionalLightFront.shadow.camera.top = 7
+directionalLightFront.shadow.camera.right = 7
+directionalLightFront.shadow.camera.bottom = - 7
+directionalLightFront.position.set(5, 5, 5)
+scene.add(directionalLightFront)
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1.8)
-directionalLight.castShadow = true
-directionalLight.shadow.mapSize.set(1024, 1024)
-directionalLight.shadow.camera.far = 15
-directionalLight.shadow.camera.left = - 7
-directionalLight.shadow.camera.top = 7
-directionalLight.shadow.camera.right = 7
-directionalLight.shadow.camera.bottom = - 7
-directionalLight.position.set(5, 5, 5)
-scene.add(directionalLight)
+const directionalLightBack = new THREE.DirectionalLight(0xffffff, 1.8)
+directionalLightBack.castShadow = true
+directionalLightBack.shadow.mapSize.set(1024, 1024)
+directionalLightBack.shadow.camera.far = 15
+directionalLightBack.shadow.camera.left = - 7
+directionalLightBack.shadow.camera.top = 7
+directionalLightBack.shadow.camera.right = 7
+directionalLightBack.shadow.camera.bottom = - 7
+directionalLightBack.position.set(5, 5, -5)
+scene.add(directionalLightBack)
+
+
+// const LightHelper = new THREE.DirectionalLightHelper(directionalLightFront)
+// scene.add(LightHelper)
 
 /**
  * Sizes
@@ -126,7 +140,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
 
 // Define materials
-const material = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
+const material = new THREE.MeshLambertMaterial({ color: '#EEE6D9', side: THREE.DoubleSide });
 
 // Define geometry for the nutrition facts plane
 const planeWidth = 6;
@@ -140,7 +154,7 @@ scene.add(nutritionFactsPlane);
 // Add text labels for nutrition facts
 const textLoader = new FontLoader();
 textLoader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function(font) {
-    const textMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+    const textMaterial = new THREE.MeshLambertMaterial({ color: 0x000000 });
 
     // Function to create text mesh
     function createTextMesh(text, position, size) {
@@ -161,14 +175,14 @@ textLoader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.
     // Add nutrition facts labels
     const labels = [
         { text: "Nutrition Facts", position: new THREE.Vector3(-2.5, 1.5, 0), size: 0.4 },
-        { text: "Serving Size 1 cup (240g)", position: new THREE.Vector3(-2.5, 1, 0), size: 0.2 },
-        { text: "Calories 100", position: new THREE.Vector3(-2.5, 0.5, 0), size: 0.2 },
-        { text: "Total Fat 1g", position: new THREE.Vector3(-2.5, 0, 0), size: 0.2 },
-        { text: "Sodium 10mg", position: new THREE.Vector3(-2.5, -0.5, 0), size: 0.2 },
-        { text: "Total Carbohydrate 20g", position: new THREE.Vector3(-2.5, -1, 0), size: 0.2 },
-        { text: "Dietary Fiber 3g", position: new THREE.Vector3(-2.5, -1.5, 0), size: 0.2 },
-        { text: "Sugars 10g", position: new THREE.Vector3(-2.5, -2, 0), size: 0.2 },
-        { text: "Protein 5g", position: new THREE.Vector3(-2.5, -2.5, 0), size: 0.2 }
+        { text: "Serving Size 1 Bar (94g)", position: new THREE.Vector3(-2.5, 1, 0), size: 0.2 },
+        { text: "Calories 190", position: new THREE.Vector3(-2.5, 0.5, 0), size: 0.2 },
+        { text: "Total Fat 11g", position: new THREE.Vector3(-2.5, 0, 0), size: 0.2 },
+        { text: "Sodium 25mg", position: new THREE.Vector3(-2.5, -0.5, 0), size: 0.2 },
+        { text: "Total Carbohydrate 22g", position: new THREE.Vector3(-2.5, -1, 0), size: 0.2 },
+        { text: "Dietary Fiber 4g", position: new THREE.Vector3(-2.5, -1.5, 0), size: 0.2 },
+        { text: "Sugars 12g", position: new THREE.Vector3(-2.5, -2, 0), size: 0.2 },
+        { text: "Protein 5.5g", position: new THREE.Vector3(-2.5, -2.5, 0), size: 0.2 }
     ];
 
     labels.forEach(label => {
@@ -177,12 +191,12 @@ textLoader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.
 
     });
 
-
+    nutritionFactsPlane.receiveShadow = true
+    
     nutritionFactsPlane.position.set(0, -1, -6.5)
-
     nutritionFactsPlane.rotation.x = (0);
-nutritionFactsPlane.rotation.y = (Math.PI);
-nutritionFactsPlane.rotation.z = (0);
+    nutritionFactsPlane.rotation.y = (Math.PI);
+    nutritionFactsPlane.rotation.z = (0);
 
 
 })
